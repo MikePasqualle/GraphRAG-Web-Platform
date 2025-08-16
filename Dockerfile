@@ -34,17 +34,25 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
 COPY backend/ ./
 
 # ----------------------
+# Frontend deps stage
+# ----------------------
+FROM node:18-alpine AS frontend-deps
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+# Robust install: prefer lockfile, fallback to install
+RUN npm install --frozen-lockfile || npm install
+
+# ----------------------
 # Frontend build stage
 # ----------------------
 FROM node:18-alpine AS frontend-build
 WORKDIR /app/frontend
-
-# Copy package manifests and install deps
-COPY frontend/package*.json ./
-RUN npm install --frozen-lockfile || npm install
-
-# Now copy the rest of the app sources
+# Bring node_modules from deps to keep cache
+COPY --from=frontend-deps /app/frontend/node_modules ./node_modules
+# Copy full frontend source (ensures tsconfig.json, next.config.js, src/** exist)
 COPY frontend/ ./
+# Early sanity checks to fail fast if files missing
+RUN test -f tsconfig.json && test -f next.config.js && test -f src/lib/utils.ts
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 

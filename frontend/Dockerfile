@@ -24,6 +24,9 @@ COPY --from=deps /app/node_modules ./node_modules
 # Копіювання всіх файлів проекту
 COPY . .
 
+# Перевірки присутності критичних файлів (падаємо рано, якщо чогось не вистачає)
+RUN test -f tsconfig.json && test -f next.config.js && test -f src/lib/utils.ts
+
 # Відключення телеметрії Next.js
 ENV NEXT_TELEMETRY_DISABLED 1
 
