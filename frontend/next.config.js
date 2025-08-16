@@ -27,6 +27,8 @@ const nextConfig = {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       '@': path.resolve(__dirname, 'src'),
+      '@/lib': path.resolve(__dirname, 'src/lib'),
+      '@/components': path.resolve(__dirname, 'src/components'),
     };
 
     // Дозволяємо Webpack враховувати tsconfig.json paths (дублюємо для надійності)
@@ -43,6 +45,12 @@ const nextConfig = {
       'node_modules',
       ...(config.resolve.modules || []),
     ];
+
+    // Розширення файлів для резолву
+    config.resolve.extensions = Array.from(new Set([
+      '.ts', '.tsx', '.js', '.jsx', '.json',
+      ...(config.resolve.extensions || []),
+    ]));
     return config;
   },
   images: {
