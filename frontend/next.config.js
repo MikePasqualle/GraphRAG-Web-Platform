@@ -6,12 +6,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
-  experimental: {
-    appDir: true,
-  },
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
+  // Remove deprecated experimental.appDir and unused env vars
   async rewrites() {
     return [
       {

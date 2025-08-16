@@ -11,8 +11,8 @@ WORKDIR /app
 # Копіювання package files
 COPY package.json package-lock.json* ./
 
-# Встановлення залежностей для збірки
-RUN npm ci
+# Встановлення залежностей для збірки (handle absence of package-lock.json)
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Збірка додатку
 FROM base AS builder
