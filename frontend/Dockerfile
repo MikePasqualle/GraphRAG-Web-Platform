@@ -21,8 +21,13 @@ WORKDIR /app
 # Копіювання залежностей з попереднього етапу
 COPY --from=deps /app/node_modules ./node_modules
 
-# Копіювання всіх файлів проекту
-COPY . .
+# Копіювання файлів конфігурації та вихідного коду
+# Explicitly copy config files and source directories to ensure correct placement
+COPY package.json ./
+COPY tsconfig.json ./
+COPY next.config.js ./
+COPY src ./src
+COPY public ./public
 
 # Відключення телеметрії Next.js
 ENV NEXT_TELEMETRY_DISABLED 1

@@ -36,15 +36,24 @@ COPY backend/ ./
 # ----------------------
 # Frontend build stage
 # ----------------------
-FROM node:18-alpine AS frontend-build
+FROM node:18-alpine AS frontend-deps
 WORKDIR /app/frontend
-
-# Copy package manifests and install deps
 COPY frontend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Now copy the rest of the app sources
-COPY frontend/ ./
+# Frontend build stage
+FROM node:18-alpine AS frontend-build
+WORKDIR /app/frontend
+
+# Copy node_modules from deps stage
+COPY --from=frontend-deps /app/frontend/node_modules ./node_modules
+
+# Copy only necessary config and source files explicitly
+COPY frontend/package.json ./
+COPY frontend/tsconfig.json ./
+COPY frontend/next.config.js ./
+COPY frontend/src ./src
+COPY frontend/public ./public
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
