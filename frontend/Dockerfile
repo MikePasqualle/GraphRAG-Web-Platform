@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Встановлення залежностей для збірки (handle absence of package-lock.json)
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+RUN npm install --frozen-lockfile || npm install
 
 # Збірка додатку
 FROM base AS builder
@@ -21,13 +21,8 @@ WORKDIR /app
 # Копіювання залежностей з попереднього етапу
 COPY --from=deps /app/node_modules ./node_modules
 
-# Копіювання файлів конфігурації та вихідного коду
-# Explicitly copy config files and source directories to ensure correct placement
-COPY package.json ./
-COPY tsconfig.json ./
-COPY next.config.js ./
-COPY src ./src
-COPY public ./public
+# Копіювання всіх файлів проекту
+COPY . .
 
 # Відключення телеметрії Next.js
 ENV NEXT_TELEMETRY_DISABLED 1

@@ -13,11 +13,11 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import toast from 'react-hot-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn, formatPercentage, formatRelativeTime } from '@/lib/utils';
 import { api } from '@/lib/api';
 import type { IndexingProgress } from '@/lib/types';
-import toast from 'react-hot-toast';
 
 interface IndexingStatusProps {
   fileId?: string;

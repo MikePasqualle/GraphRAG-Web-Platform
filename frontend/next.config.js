@@ -1,4 +1,5 @@
 const path = require('path');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -27,6 +28,21 @@ const nextConfig = {
       ...(config.resolve.alias || {}),
       '@': path.resolve(__dirname, 'src'),
     };
+
+    // Дозволяємо Webpack враховувати tsconfig.json paths (дублюємо для надійності)
+    config.resolve.plugins = config.resolve.plugins || [];
+    config.resolve.plugins.push(
+      new TsconfigPathsPlugin({
+        configFile: path.resolve(__dirname, 'tsconfig.json'),
+      })
+    );
+
+    // Гарантуємо пошук модулів також у src/
+    config.resolve.modules = [
+      path.resolve(__dirname, 'src'),
+      'node_modules',
+      ...(config.resolve.modules || []),
+    ];
     return config;
   },
   images: {

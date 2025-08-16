@@ -243,7 +243,6 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       layout: ({
         name: settings.layout,
         animate: true,
-        animationDuration: 500,
         fit: true,
         padding: 50,
         // Дополнительные параметры для разных алгоритмов
@@ -377,8 +376,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const handleLayoutChange = (newLayout: GraphSettings['layout']) => {
     setSettings(prev => ({ ...prev, layout: newLayout }));
     if (cyInstance.current) {
-      // Cast to any to allow animate flag for plugins that support it
-      cyInstance.current.layout({ name: newLayout, animate: true } as any).run();
+      cyInstance.current.layout({ name: newLayout } as any).run();
     }
   };
 
