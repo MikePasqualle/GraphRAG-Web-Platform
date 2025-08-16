@@ -1,0 +1,38 @@
+[Unit]
+Description=GraphRAG Backend Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=exec
+User=graphrag
+Group=graphrag
+WorkingDirectory=/opt/graphrag-web-platform/backend
+Environment=PATH=/opt/graphrag-web-platform/venv/bin
+Environment=PYTHONPATH=/opt/graphrag-web-platform/backend
+ExecStart=/opt/graphrag-web-platform/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=graphrag-backend
+
+# Обмеження ресурсів
+LimitNOFILE=65536
+MemoryHigh=2G
+MemoryMax=4G
+CPUQuota=200%
+
+# Безпека
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/graphrag-web-platform/data /opt/graphrag-web-platform/logs
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

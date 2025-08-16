@@ -1,0 +1,150 @@
+# GraphRAG Configuration for GPT-5 and text-embedding-3-large
+
+# API Settings
+api:
+  type: openai_chat
+  base_url: https://api.openai.com/v1
+  api_key: ${OPENAI_API_KEY}
+
+# Language Model Configuration
+llm:
+  api_key: ${OPENAI_API_KEY}
+  type: openai_chat
+  model: gpt-4o-2024-11-20
+  api_base: https://api.openai.com/v1
+  api_version: 2024-08-01-preview
+  deployment_name: null
+  temperature: 0.1
+  top_p: 1.0
+  max_tokens: 4096
+  # GPT-5 specific settings
+  reasoning_effort: high  # low, medium, high
+  max_completion_tokens: 4096
+  presence_penalty: 0.0
+  frequency_penalty: 0.0
+  response_format:
+    type: "text"
+
+# Embedding Model Configuration
+embeddings:
+  api_key: ${OPENAI_API_KEY}
+  type: openai_embedding
+  model: text-embedding-3-large
+  api_base: https://api.openai.com/v1
+  api_version: 2024-08-01-preview
+  deployment_name: null
+  dimensions: 3072  # text-embedding-3-large supports up to 3072 dimensions
+  encoding_format: float
+  batch_size: 100
+  max_retries: 3
+  retry_delay: 2
+
+# Text Chunking Configuration
+chunks:
+  size: 1200
+  overlap: 100
+  group_by_columns: [id]
+  strategy:
+    type: "sentence"
+    sentence_split_regex: (?<=[.!?])\s+
+    max_chunk_overlap: 100
+
+# Entity Extraction Configuration
+entity_extraction:
+  llm_params:
+    max_tokens: 2000
+    temperature: 0.1
+  prompt: "prompts/entity_extraction.txt"
+  entity_types: [person, organization, location, event, concept, technology]
+  max_gleanings: 1
+  encoding_model: cl100k_base
+
+# Relationship Extraction Configuration  
+relationships:
+  llm_params:
+    max_tokens: 2000
+    temperature: 0.1
+  prompt: "prompts/relationship_extraction.txt"
+  max_gleanings: 1
+  encoding_model: cl100k_base
+
+# Community Detection Configuration
+community_reports:
+  llm_params:
+    max_tokens: 4000
+    temperature: 0.1
+  prompt: "prompts/community_report.txt"
+  max_length: 2000
+  max_input_length: 8000
+
+# Global Search Configuration
+global_search:
+  llm_params:
+    max_tokens: 4000
+    temperature: 0.1
+  data_max_tokens: 12000
+  map_max_tokens: 1000
+  reduce_max_tokens: 2000
+  concurrency: 4
+
+# Local Search Configuration  
+local_search:
+  llm_params:
+    max_tokens: 4000
+    temperature: 0.1
+  text_unit_prop: 0.5
+  community_prop: 0.1
+  conversation_history_max_turns: 5
+  top_k_mapped_entities: 10
+  top_k_relationships: 10
+  max_tokens: 12000
+
+# Input Configuration
+input:
+  type: file
+  file_type: text
+  base_dir: "./data/uploads"
+  file_encoding: utf-8
+  file_pattern: ".*\\.txt$"
+
+# Storage Configuration
+storage:
+  type: file
+  base_dir: "./data/output"
+
+# Cache Configuration
+cache:
+  type: file
+  base_dir: "./data/cache"
+
+# Reporting Configuration
+reporting:
+  type: file
+  base_dir: "./data/output/reports"
+
+# Umap Configuration (for visualization)
+umap:
+  enabled: true
+  n_neighbors: 15
+  n_components: 2
+  metric: cosine
+  min_dist: 0.1
+  spread: 1.0
+  random_state: 42
+
+# Snapshots Configuration
+snapshots:
+  graphml: true
+  raw_entities: true
+  top_level_nodes: true
+
+# Encoding Configuration
+encoding_model: cl100k_base
+
+# Skip Workflows (optional optimization)
+skip_workflows: []
+
+# Parallelization
+parallelization:
+  stagger: 0.3
+  num_threads: ${WORKER_THREADS:4}

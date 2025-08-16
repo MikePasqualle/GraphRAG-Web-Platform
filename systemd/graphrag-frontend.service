@@ -1,0 +1,39 @@
+[Unit]
+Description=GraphRAG Frontend Service
+After=network.target graphrag-backend.service
+Wants=network.target
+Requires=graphrag-backend.service
+
+[Service]
+Type=exec
+User=graphrag
+Group=graphrag
+WorkingDirectory=/opt/graphrag-web-platform/frontend
+Environment=NODE_ENV=production
+Environment=NEXT_PUBLIC_API_URL=http://localhost:8000
+Environment=PORT=3000
+ExecStart=/usr/bin/node server.js
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=graphrag-frontend
+
+# Обмеження ресурсів
+LimitNOFILE=65536
+MemoryHigh=1G
+MemoryMax=2G
+CPUQuota=100%
+
+# Безпека
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
