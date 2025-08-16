@@ -39,9 +39,11 @@ COPY backend/ ./
 FROM node:18-alpine AS frontend-build
 WORKDIR /app/frontend
 
-COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm ci
+# Copy package manifests and install deps
+COPY frontend/package*.json ./
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
+# Now copy the rest of the app sources
 COPY frontend/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
