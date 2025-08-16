@@ -75,25 +75,30 @@ if grep -q "sk-your-openai-api-key-here" .env; then
     error "❌ Будь ласка, встановіть справжній OpenAI API key у .env файлі"
 fi
 
-# Збірка frontend
-step "Збірка frontend..."
-cd frontend
+# Збірка frontend (тільки якщо не в Docker режимі)
+step "Перевірка frontend..."
 
-# Перевірка наявності Node.js
-if ! command -v node &> /dev/null; then
-    error "Node.js не встановлено. Встановіть Node.js 18+ та спробуйте знову."
+# Перевірка наявності Node.js для локальної збірки
+if command -v node &> /dev/null; then
+    info "Node.js знайдено, підготовка frontend..."
+    cd frontend
+    
+    # Встановлення залежностей якщо потрібно
+    if [ ! -d "node_modules" ]; then
+        info "Встановлення npm залежностей..."
+        npm install
+    fi
+    
+    # Перевіряємо чи потрібна збірка (для development)
+    if [ ! -d ".next" ] && [ "$ENVIRONMENT" = "development" ]; then
+        info "Збірка frontend додатку..."
+        npm run build
+    fi
+    
+    cd ..
+else
+    info "Node.js не знайдено, збірка буде виконана в Docker контейнері"
 fi
-
-# Встановлення залежностей та збірка
-if [ ! -d "node_modules" ]; then
-    info "Встановлення npm залежностей..."
-    npm install
-fi
-
-info "Збірка frontend додатку..."
-npm run build
-
-cd ..
 
 # Збірка та запуск контейнерів
 step "Збірка Docker образів..."

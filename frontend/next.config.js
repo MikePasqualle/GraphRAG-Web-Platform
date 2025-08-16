@@ -30,11 +30,16 @@ const nextConfig = {
   },
   images: {
     domains: ['localhost'],
+    unoptimized: true,
   },
   // Налаштування для production
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
+  trailingSlash: false,
+  // Додаткові налаштування для Docker
+  generateEtags: false,
+  distDir: '.next',
 };
 
 module.exports = nextConfig;

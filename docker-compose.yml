@@ -33,9 +33,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - ./config:/app/config
+      - ./data:/app/data:rw
+      - ./logs:/app/logs:rw
+      - ./config:/app/config:ro
     restart: unless-stopped
     depends_on:
       - redis
@@ -57,6 +57,7 @@ services:
       - NEXT_PUBLIC_MAX_FILE_SIZE=104857600
       - NEXT_PUBLIC_SUPPORTED_FILE_TYPES=txt,pdf,docx
       - NEXT_PUBLIC_DEBUG=false
+      - NODE_ENV=production
     ports:
       - "3000:3000"
     depends_on:
@@ -78,22 +79,22 @@ services:
     networks:
       - graphrag-network
 
-  # Nginx reverse proxy (optional)
-  nginx:
-    image: nginx:alpine
-    container_name: graphrag-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - backend
-      - frontend
-    restart: unless-stopped
-    networks:
-      - graphrag-network
+  # Nginx reverse proxy (optional - uncomment for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: graphrag-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   restart: unless-stopped
+  #   networks:
+  #     - graphrag-network
 
 volumes:
   redis_data:
